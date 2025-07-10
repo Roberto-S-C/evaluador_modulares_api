@@ -1,0 +1,64 @@
+CREATE TABLE projects(
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	name TEXT NOT NULL,
+	description TEXT NOT NULL
+);
+
+CREATE TABLE users(
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	name TEXT NOT NULL,
+	last_name TEXT NOT NULL,
+	email TEXT NOT NULL,
+	password TEXT NOT NULL,
+	role TEXT NOT NULL CHECK(role IN ('student', 'evaluator', 'admin')),
+	project_id INTEGER REFERENCES projects(id)
+);
+
+CREATE TABLE scores(
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	value INTEGER NOT NULL,
+	project_id INTEGER NOT NULL REFERENCES projects(id),
+	user_id INTEGER NOT NULL REFERENCES users(id)
+);
+
+CREATE TABLE documents(
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,       
+	name TEXT NOT NULL,
+	format TEXT NOT NULL CHECK(format IN ('.jpeg', '.jpg', '.png', '.pdf'))
+);
+
+CREATE TABLE files(
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	link TEXT NOT NULL,
+	document_id INTEGER NOT NULL REFERENCES documents(id),
+	project_id INTEGER NOT NULL REFERENCES projects(id)
+);
+
+CREATE TABLE evaluations(
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	name TEXT NOT NULL
+);
+
+CREATE TABLE evaluation_metrics(
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	name TEXT NOT NULL,
+	evaluation_id INTEGER NOT NULL REFERENCES evaluations(id)
+);
+
+CREATE TABLE metric_options(
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	description TEXT NOT NULL,
+	value INTEGER NOT NULL,
+	evaluation_metric_id INTEGER NOT NULL REFERENCES evaluation_metrics(id)
+);
+
+CREATE TABLE rule_sections(
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	name TEXT NOT NULL
+);
+
+CREATE TABLE rules(
+	id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	description TEXT NOT NULL,
+	rule_section_id INTEGER NOT NULL REFERENCES rule_sections(id)
+);
